@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Weather Station</string>
+    <string name="temperature_text">Temperature:</string>
+    <string name="humidity_text">Humidity:</string>
+    <string name="pressure_text">Pressure:</string>
+    <string name="illuminance_text">Illuminance:</string>
+    <string name="check_button">Update</string>
+</resources>
