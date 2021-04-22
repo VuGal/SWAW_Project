@@ -1,0 +1,296 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:GND #PWR03
+U 1 1 608FE341
+P 6950 1150
+F 0 "#PWR03" H 6950 900 50  0001 C CNN
+F 1 "GND" H 6955 977 50  0000 C CNN
+F 2 "" H 6950 1150 50  0001 C CNN
+F 3 "" H 6950 1150 50  0001 C CNN
+	1    6950 1150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR04
+U 1 1 608FEB29
+P 7250 750
+F 0 "#PWR04" H 7250 600 50  0001 C CNN
+F 1 "+5V" H 7265 923 50  0000 C CNN
+F 2 "" H 7250 750 50  0001 C CNN
+F 3 "" H 7250 750 50  0001 C CNN
+	1    7250 750 
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG01
+U 1 1 608FF5F2
+P 6950 750
+F 0 "#FLG01" H 6950 825 50  0001 C CNN
+F 1 "PWR_FLAG" H 6950 923 50  0000 C CNN
+F 2 "" H 6950 750 50  0001 C CNN
+F 3 "~" H 6950 750 50  0001 C CNN
+	1    6950 750 
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG02
+U 1 1 608FFB1C
+P 7250 1150
+F 0 "#FLG02" H 7250 1225 50  0001 C CNN
+F 1 "PWR_FLAG" H 7250 1323 50  0000 C CNN
+F 2 "" H 7250 1150 50  0001 C CNN
+F 3 "~" H 7250 1150 50  0001 C CNN
+	1    7250 1150
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	7250 750  7250 1150
+Wire Wire Line
+	6950 750  6950 1150
+$Comp
+L Sensor:DHT11 U1
+U 1 1 609002CC
+P 3850 4400
+F 0 "U1" H 3606 4446 50  0000 R CNN
+F 1 "DHT11" H 3606 4355 50  0000 R CNN
+F 2 "Sensor:Aosong_DHT11_5.5x12.0_P2.54mm" H 3850 4000 50  0001 C CNN
+F 3 "http://akizukidenshi.com/download/ds/aosong/DHT11.pdf" H 4000 4650 50  0001 C CNN
+	1    3850 4400
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR01
+U 1 1 60906A04
+P 3950 900
+F 0 "#PWR01" H 3950 650 50  0001 C CNN
+F 1 "GND" H 3955 727 50  0000 C CNN
+F 2 "" H 3950 900 50  0001 C CNN
+F 3 "" H 3950 900 50  0001 C CNN
+	1    3950 900 
+	0    -1   1    0   
+$EndComp
+Wire Wire Line
+	2800 1150 3200 1150
+$Comp
+L Connector_Generic:Conn_02x19_Odd_Even J2
+U 1 1 609805AB
+P 1050 3500
+F 0 "J2" H 1100 4617 50  0000 C CNN
+F 1 "Conn_02x19_Counter_Clockwise" H 1100 4526 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x19_P2.54mm_Vertical" H 1050 3500 50  0001 C CNN
+F 3 "~" H 1050 3500 50  0001 C CNN
+	1    1050 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_02x19_Odd_Even J5
+U 1 1 609824F5
+P 8950 3500
+F 0 "J5" H 9000 4617 50  0000 C CNN
+F 1 "Conn_02x19_Counter_Clockwise" H 9000 4526 50  0000 C CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_2x19_P2.54mm_Vertical" H 8950 3500 50  0001 C CNN
+F 3 "~" H 8950 3500 50  0001 C CNN
+	1    8950 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x06 J3
+U 1 1 60983FFB
+P 6050 2900
+F 0 "J3" H 6130 2892 50  0000 L CNN
+F 1 "Conn_01x06" H 6130 2801 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical" H 6050 2900 50  0001 C CNN
+F 3 "~" H 6050 2900 50  0001 C CNN
+	1    6050 2900
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector:Jack-DC J1
+U 1 1 609034C2
+P 2700 850
+F 0 "J1" H 2757 1175 50  0000 C CNN
+F 1 "Jack-DC" H 2757 1084 50  0000 C CNN
+F 2 "Connector_BarrelJack:BarrelJack_Horizontal" H 2750 810 50  0001 C CNN
+F 3 "~" H 2750 810 50  0001 C CNN
+	1    2700 850 
+	0    -1   1    0   
+$EndComp
+Wire Wire Line
+	2600 1700 2800 1700
+$Comp
+L Device:CP C1
+U 1 1 60904AC5
+P 2950 1700
+F 0 "C1" H 3068 1746 50  0000 L CNN
+F 1 "CP" H 3068 1655 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm" H 2988 1550 50  0001 C CNN
+F 3 "~" H 2950 1700 50  0001 C CNN
+	1    2950 1700
+	0    -1   1    0   
+$EndComp
+Wire Wire Line
+	2600 2800 1350 2800
+Wire Wire Line
+	2600 2800 2600 1700
+$Comp
+L Connector_Generic:Conn_01x04 J6
+U 1 1 609A3DBC
+P 5150 5300
+F 0 "J6" H 5230 5292 50  0000 L CNN
+F 1 "Conn_01x04" H 5230 5201 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Vertical" H 5150 5300 50  0001 C CNN
+F 3 "~" H 5150 5300 50  0001 C CNN
+	1    5150 5300
+	0    -1   1    0   
+$EndComp
+Wire Wire Line
+	2950 4000 1350 4000
+$Comp
+L Connector_Generic:Conn_01x05 J4
+U 1 1 60984D9C
+P 6050 4200
+F 0 "J4" H 6130 4242 50  0000 L CNN
+F 1 "Conn_01x05" H 6130 4151 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x05_P2.54mm_Vertical" H 6050 4200 50  0001 C CNN
+F 3 "~" H 6050 4200 50  0001 C CNN
+	1    6050 4200
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	6250 4000 6400 4000
+Wire Wire Line
+	6250 4100 6600 4100
+Wire Wire Line
+	6600 4100 6600 3600
+Wire Wire Line
+	6250 3000 7700 3000
+Wire Wire Line
+	7700 3000 7700 2700
+Wire Wire Line
+	7700 2700 8750 2700
+Wire Wire Line
+	6250 2900 7750 2900
+Wire Wire Line
+	7750 2900 7750 2800
+Wire Wire Line
+	7750 2800 8750 2800
+Wire Wire Line
+	6250 4300 7650 4300
+Wire Wire Line
+	7650 4300 7650 4750
+Wire Wire Line
+	7650 4750 9650 4750
+Wire Wire Line
+	9650 4750 9650 3400
+Wire Wire Line
+	9250 3400 9650 3400
+Wire Wire Line
+	7650 4200 7650 3800
+Wire Wire Line
+	6250 4200 7650 4200
+Wire Wire Line
+	7650 3800 8750 3800
+Wire Wire Line
+	6400 3300 6400 4000
+Wire Wire Line
+	6250 3200 6400 3200
+Wire Wire Line
+	6400 3200 6400 3300
+Connection ~ 6400 3300
+Wire Wire Line
+	6250 3100 6600 3100
+Wire Wire Line
+	6600 3100 6600 3600
+Connection ~ 6600 3600
+Wire Wire Line
+	1350 3600 3200 3600
+Connection ~ 3200 3600
+Connection ~ 2600 1700
+Connection ~ 3200 1150
+Wire Wire Line
+	3200 1150 3200 1700
+Wire Wire Line
+	2600 1150 2600 1700
+Wire Wire Line
+	3100 1700 3200 1700
+Connection ~ 3200 1700
+Wire Wire Line
+	3200 1700 3200 3600
+Wire Wire Line
+	3200 900  3200 1150
+Wire Wire Line
+	3200 900  3950 900 
+Wire Wire Line
+	3850 4700 3850 5050
+Wire Wire Line
+	3850 5050 4400 5050
+Wire Wire Line
+	4400 5050 4400 3600
+Connection ~ 4400 3600
+Wire Wire Line
+	4400 3600 5250 3600
+Wire Wire Line
+	3200 3600 4400 3600
+Wire Wire Line
+	2950 4000 2950 4400
+Wire Wire Line
+	2950 4400 3550 4400
+Wire Wire Line
+	2750 3400 2750 3800
+Wire Wire Line
+	2750 3800 3850 3800
+Wire Wire Line
+	3850 3800 3850 4100
+Wire Wire Line
+	1350 3400 2750 3400
+Wire Wire Line
+	1350 3300 5350 3300
+Wire Wire Line
+	5350 5100 5350 3300
+Connection ~ 5350 3300
+Wire Wire Line
+	5350 3300 6400 3300
+Wire Wire Line
+	5250 5100 5250 3600
+Connection ~ 5250 3600
+Wire Wire Line
+	5250 3600 6600 3600
+Wire Wire Line
+	5150 5100 5150 4500
+Wire Wire Line
+	5150 4500 4650 4500
+Wire Wire Line
+	4650 4500 4650 6450
+Wire Wire Line
+	4650 6450 10100 6450
+Wire Wire Line
+	10100 6450 10100 3200
+Wire Wire Line
+	10100 3200 9250 3200
+Wire Wire Line
+	9250 3100 10000 3100
+Wire Wire Line
+	10000 6350 4750 6350
+Wire Wire Line
+	4750 6350 4750 4650
+Wire Wire Line
+	4750 4650 5050 4650
+Wire Wire Line
+	5050 4650 5050 5100
+Wire Wire Line
+	10000 3100 10000 6350
+$EndSCHEMATC
