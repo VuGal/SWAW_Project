@@ -58,21 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
-#define DHT_22_1_Wire_Pin GPIO_PIN_1
-#define DHT_22_1_Wire_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
-#define BH1750_I2C_SCL_Pin GPIO_PIN_10
-#define BH1750_I2C_SCL_GPIO_Port GPIOB
-#define BH1750_I2C_SDA_Pin GPIO_PIN_11
-#define BH1750_I2C_SDA_GPIO_Port GPIOB
-#define BMP280_I2C_SCL_Pin GPIO_PIN_8
-#define BMP280_I2C_SCL_GPIO_Port GPIOB
-#define BMP280_I2C_SDA_Pin GPIO_PIN_9
-#define BMP280_I2C_SDA_GPIO_Port GPIOB
+#define DHT22_1_Wire_Pin GPIO_PIN_1
+#define DHT22_1_Wire_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
