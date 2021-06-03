@@ -5,7 +5,7 @@ from luma.core.render import canvas
 from luma.oled.device import ssd1331
 import os
 
-serial = spi(device=0, port=1)
+serial = spi(device=0, port=1, gpio_DC=24, gpio_RST=23)
 device = ssd1331(serial)
 
 def parser():
@@ -37,4 +37,4 @@ if __name__ == "__main__":
     while(1):
         to_draw = parser()
         lcd_draw(to_draw)
-        time.sleep(1)
+        time.sleep(60)
