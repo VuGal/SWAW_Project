@@ -58,8 +58,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define DHT22_1_Wire_Pin GPIO_PIN_1
-#define DHT22_1_Wire_GPIO_Port GPIOA
+#define DHT22_1Wire_Pin GPIO_PIN_1
+#define DHT22_1Wire_GPIO_Port GPIOA
+#define BH1750_I2C_SCL_Pin GPIO_PIN_10
+#define BH1750_I2C_SCL_GPIO_Port GPIOB
+#define BH1750_I2C_SDA_Pin GPIO_PIN_11
+#define BH1750_I2C_SDA_GPIO_Port GPIOB
+#define BMP280_I2C_SCL_Pin GPIO_PIN_8
+#define BMP280_I2C_SCL_GPIO_Port GPIOB
+#define BMP280_I2C_SDA_Pin GPIO_PIN_9
+#define BMP280_I2C_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

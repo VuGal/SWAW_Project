@@ -23,6 +23,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "DHT22.h"
+#include "BMP280.h"
+#include "BH1750.h"
 
 /* USER CODE END Includes */
 
@@ -50,14 +53,32 @@ TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
 
+CAN_FilterTypeDef sFilterConfig;
+CAN_TxHeaderTypeDef TxHeader;
+CAN_RxHeaderTypeDef RxHeader;
+uint16_t TxData[4] = {0, 0, 0, 0};
+uint16_t RxData[4] = {0, 0, 0, 0};
+uint32_t TxMailbox;
+
+
 uint8_t Rh_byte1, Rh_byte2, Temp_byte1, Temp_byte2;
-uint16_t SUM, RH, TEMP;
+uint16_t RH, TEMP;
 
 float Temperature = 0;
 float Humidity = 0;
 uint8_t Presence = 0;
 char message[10];
-int tempo = 0;
+
+
+BMP280_HandleTypedef bmp280;
+float pressureBmp280, temperatureBmp280, humidityBmp280;
+
+uint16_t size;
+uint8_t Data[256];
+
+float BH1750_lux;
+
+int init_iter = 0;
 
 /* USER CODE END PV */
 
@@ -65,93 +86,15 @@ int tempo = 0;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM1_Init(void);
-static void MX_CAN_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2C2_Init(void);
+static void MX_CAN_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-
-void delay_us (uint16_t us)
-{
-	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
-}
-
-void Set_Pin_Output (GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
-{
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
-}
-
-void Set_Pin_Input (GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
-{
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
-}
-
-#define DHT22_PORT GPIOA
-#define DHT22_PIN GPIO_PIN_1
-
-
-uint8_t DHT22_Start (void)
-{
-	Set_Pin_Output(DHT22_PORT, DHT22_PIN); // set the pin as output
-	HAL_GPIO_WritePin (DHT22_PORT, DHT22_PIN, 0);   // pull the pin low
-	delay_us(1200);   // wait for > 1ms
-
-	HAL_GPIO_WritePin (DHT22_PORT, DHT22_PIN, 1);   // pull the pin high
-	delay_us(20);   // wait for 30us
-
-	Set_Pin_Input(DHT22_PORT, DHT22_PIN);   // set as input
-}
-
-uint8_t DHT22_Check_Response (void)
-{
-	Set_Pin_Input(DHT22_PORT, DHT22_PIN);   // set as input
-	uint8_t Response = 0;
-	delay_us(40);  // wait for 40us
-	if (!(HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN))) // if the pin is low
-	{
-		delay_us(80);   // wait for 80us
-
-		if ((HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN))) Response = 1;  // if the pin is high, response is ok
-		else Response = -1;
-	}
-
-	while ((HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)));   // wait for the pin to go low
-	return Response;
-}
-
-uint8_t DHT22_Read (void)
-{
-	uint8_t i,j;
-	for (j=0;j<8;j++)
-	{
-		while (!(HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)));   // wait for the pin to go high
-		delay_us(40);   // wait for 40 us
-
-		if (!(HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)))   // if the pin is low
-		{
-			i&= ~(1<<(7-j));   // write 0
-		}
-		else i|= (1<<(7-j));  // if the pin is high, write 1
-		while ((HAL_GPIO_ReadPin (DHT22_PORT, DHT22_PIN)));  // wait for the pin to go low
-	}
-
-	return i;
-}
-
 
 /* USER CODE END 0 */
 
@@ -161,71 +104,173 @@ uint8_t DHT22_Read (void)
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_TIM1_Init();
-  MX_CAN_Init();
-  MX_I2C1_Init();
-  MX_I2C2_Init();
-  /* USER CODE BEGIN 2 */
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_TIM1_Init();
+	MX_I2C1_Init();
+	MX_I2C2_Init();
+	MX_CAN_Init();
 
-  HAL_TIM_Base_Start(&htim1);
+	/* USER CODE BEGIN 2 */
 
-  /* USER CODE END 2 */
+	// Timer start
+	HAL_TIM_Base_Start(&htim1);
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+	// CAN filter parameters
+	sFilterConfig.FilterBank = 0;
+	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+	sFilterConfig.FilterIdHigh = 0x0000;
+	sFilterConfig.FilterIdLow = 0x0000;
+	sFilterConfig.FilterMaskIdHigh = 0x0000;
+	sFilterConfig.FilterMaskIdLow = 0x0000;
+	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+	sFilterConfig.FilterActivation = ENABLE;
+	sFilterConfig.SlaveStartFilterBank = 14;
 
-    /* USER CODE BEGIN 3 */
+	// CAN TX header parameters
+	TxHeader.StdId = 0x321;
+	TxHeader.ExtId = 0x01;
+	TxHeader.RTR = CAN_RTR_DATA;
+	TxHeader.IDE = CAN_ID_STD;
+	TxHeader.DLC = 8;
+	TxHeader.TransmitGlobalTime = DISABLE;
 
-	  DHT22_Start();
-	  Presence = DHT22_Check_Response();
-	  Rh_byte1 = DHT22_Read ();
-      Rh_byte2 = DHT22_Read ();
-	  Temp_byte1 = DHT22_Read ();
-	  Temp_byte2 = DHT22_Read ();
-	  SUM = DHT22_Read();
+	// apply CAN filter configuration
+	if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
+	{
+	  /* Filter configuration Error */
+	  Error_Handler();
+	}
 
-	  TEMP = ((Temp_byte1<<8)|Temp_byte2);
-	  RH = ((Rh_byte1<<8)|Rh_byte2);
+	// start CAN bus operation
+	if (HAL_CAN_Start(&hcan) != HAL_OK)
+	{
+	  /* Start Error */
+	  Error_Handler();
+	}
 
-	  Temperature = (float) (TEMP/10.0);
-	  Humidity = (float) (RH/10.0);
+	// BMP280 parameters
+	bmp280_init_default_params(&bmp280.params);
+	bmp280.addr = BMP280_I2C_ADDRESS_0;
+	bmp280.i2c = &hi2c1;
 
-	  //printf("Temp %f", Temperature);
-	  //printf("Hum %f", Humidity);
+	// BMP280 initialization
+	init_iter = 0;
+	while (1) {
 
-	  //HAL_GPIO_WritePin (DHT22_PORT, DHT22_PIN, 0);   // pull the pin low
-	  //delay_us(50);
-	  //HAL_GPIO_WritePin(DHT22_PORT, DHT22_PIN, 1);
-	  //delay_us(50);
+		if (bmp280_init(&bmp280, &bmp280.params)) break;
+		else {
+			HAL_Delay(1000);
+			++init_iter;
+		}
 
+		if (init_iter > 100) Error_Handler();
 
+	}
 
-	 HAL_Delay(1000);
+	// BH1750 initialization
+	init_iter = 0;
+	while (1) {
+
+		if (BH1750_Init(&hi2c2) == BH1750_OK) break;
+		else {
+			HAL_Delay(1000);
+			++init_iter;
+		}
+
+		if (init_iter > 100) Error_Handler();
+
+	}
+	BH1750_SetMode(CONTINUOUS_HIGH_RES_MODE_2);
+
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	while (1)
+	{
+	/* USER CODE END WHILE */
+
+	/* USER CODE BEGIN 3 */
+
+	// DHT22 read-out
+	DHT22_Start();
+	Presence = DHT22_Check_Response();
+	Rh_byte1 = DHT22_Read();
+	Rh_byte2 = DHT22_Read();
+	Temp_byte1 = DHT22_Read();
+	Temp_byte2 = DHT22_Read();
+	DHT22_Read();
+
+	// bit operations needed for 2-byte representation
+	TEMP = ((Temp_byte1<<8)|Temp_byte2);
+	RH = ((Rh_byte1<<8)|Rh_byte2);
+
+	// divide by 10
+	Temperature = TEMP / 10;
+	Humidity = RH / 10;
+
+	// it seems that initial values of BMP280 are more accurate when this delay takes place
+	HAL_Delay(1000);
+
+	// BMP280 read-out
+	init_iter = 0;
+	while (1) {
+
+		if (bmp280_read_float(&bmp280, &temperatureBmp280, &pressureBmp280, &humidityBmp280)) break;
+		else {
+			HAL_Delay(1000);
+			++init_iter;
+		}
+
+		if (init_iter > 100) Error_Handler();
+
+	}
+
+	pressureBmp280 /= 100;
+
+	// it seems that initial values of BH1750 are more accurate when this delay takes place
+	HAL_Delay(1000);
+
+	// BH1750 read-out
+	BH1750_ReadLight(&BH1750_lux);
+
+	// Data array filling
+	TxData[0] = Temperature;
+	TxData[1] = Humidity;
+	TxData[2] = pressureBmp280;
+	TxData[3] = BH1750_lux;
+
+	// Send message on CAN TX
+	HAL_CAN_AddTxMessage(&hcan, &TxHeader, (uint8_t *) TxData, &TxMailbox);
+
+	// Get message from CAN RX
+	HAL_CAN_GetRxMessage(&hcan, CAN_RX_FIFO0, &RxHeader, (uint8_t *) RxData);
+
+	// 30 minutes delay
+	HAL_Delay(180000);
+
   }
   /* USER CODE END 3 */
 }
@@ -248,7 +293,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -262,7 +307,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -284,15 +329,15 @@ static void MX_CAN_Init(void)
 
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 16;
+  hcan.Init.Prescaler = 6;
   hcan.Init.Mode = CAN_MODE_NORMAL;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan.Init.TimeTriggeredMode = DISABLE;
   hcan.Init.AutoBusOff = DISABLE;
   hcan.Init.AutoWakeUp = DISABLE;
-  hcan.Init.AutoRetransmission = DISABLE;
+  hcan.Init.AutoRetransmission = ENABLE;
   hcan.Init.ReceiveFifoLocked = DISABLE;
   hcan.Init.TransmitFifoPriority = DISABLE;
   if (HAL_CAN_Init(&hcan) != HAL_OK)
@@ -392,7 +437,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 72-1;
+  htim1.Init.Prescaler = 48-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 0xffff-1;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -434,18 +479,29 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DHT22_1_Wire_GPIO_Port, DHT22_1_Wire_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DHT22_1Wire_GPIO_Port, DHT22_1Wire_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : DHT22_1_Wire_Pin */
-  GPIO_InitStruct.Pin = DHT22_1_Wire_Pin;
+  /*Configure GPIO pin : DHT22_1Wire_Pin */
+  GPIO_InitStruct.Pin = DHT22_1Wire_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DHT22_1_Wire_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(DHT22_1Wire_GPIO_Port, &GPIO_InitStruct);
 
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
+{
+
+}
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, (uint8_t *) RxData);
+}
+
+
 
 /* USER CODE END 4 */
 
@@ -457,7 +513,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+	HAL_NVIC_SystemReset();
   /* USER CODE END Error_Handler_Debug */
 }
 
