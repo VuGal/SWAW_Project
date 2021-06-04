@@ -123,8 +123,8 @@ class RegressionDatabase:
                         'pressure': [],
                         'illuminance': []}
 
-            day_hours = [i for i in range(9, 21)]
-            night_hours = [i for i in range(21, 24)] + [i for i in range(0, 9)]
+            day_hours = [i for i in range(4, 23)]
+            night_hours = [i for i in range(23, 24)] + [i for i in range(0, 4)]
 
             for index, row in enumerate(day_info_dict['data']):
                 if row.hour in day_hours:
@@ -203,10 +203,15 @@ class RegressionDatabase:
         for key, value in fit_day.items():
             a, b, c, d, e, f = fit_day[key]
             self.predictions_day[key] = int(polynom(x_days_tomorrow, a, b, c, d, e, f)[-1])
+            if key != "temperature" and self.predictions_night[key] < 0:
+                self.predictions_night[key] = 0
+
 
         for key, value in fit_night.items():
             a, b, c, d, e, f = fit_night[key]
             self.predictions_night[key] = int(polynom(x_days_tomorrow, a, b, c, d, e, f)[-1])
+            if key != "temperature" and self.predictions_night[key] < 0:
+                self.predictions_night[key] = 0
 
     def class_precipitation(self):
 
