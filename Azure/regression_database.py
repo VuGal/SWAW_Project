@@ -2,7 +2,6 @@ import mysql.connector
 import numpy as np
 import datetime
 from scipy.optimize import curve_fit
-from matplotlib import pyplot
 
 
 def polynom(x, a, b, c, d, e, f):
@@ -175,7 +174,7 @@ class RegressionDatabase:
             for key, value in self.mean_values_20_days.items():
                 self.mean_values_20_days[key].append(row['mean_' + key])
 
-    def calc_predicted_data(self):
+    def cacl_predicted_data(self):
 
         self.get_single_day()
         self.append_to_overall_table()
@@ -209,23 +208,9 @@ class RegressionDatabase:
             a, b, c, d, e, f = fit_night[key]
             self.predictions_night[key] = int(polynom(x_days_tomorrow, a, b, c, d, e, f)[-1])
 
-    def get_season(self, given_day):
-        Y = 2021  # dummy leap year to allow input X-02-29 (leap day)
-        seasons = [('winter', (datetime.date(Y, 1, 1), datetime.date(Y, 3, 20))),
-                   ('spring', (datetime.date(Y, 3, 21), datetime.date(Y, 6, 20))),
-                   ('summer', (datetime.date(Y, 6, 21), datetime.date(Y, 9, 22))),
-                   ('autumn', (datetime.date(Y, 9, 23), datetime.date(Y, 12, 20))),
-                   ('winter', (datetime.date(Y, 12, 21), datetime.date(Y, 12, 31)))]
-        if isinstance(given_day, datetime.datetime):
-            now = given_day.date()
-        now = given_day.replace(year=Y).date()
-        return next(season for season, (start, end) in seasons
-                    if start <= now <= end)
-
     def class_precipitation(self):
 
         following_day = self.mean_values_20_days['date'][-1] + datetime.timedelta(days=1)
-        season_for_following_day = self.get_season(following_day)
 
         humidity_lvl_day = {1: 80,
                        2: 77,
@@ -298,7 +283,7 @@ if __name__ == '__main__':
     weather_station = RegressionDatabase()
     weather_station.get_data_from_database()
 
-    weather_station.calc_predicted_data()
+    weather_station.cacl_predicted_data()
 
     print("temp", weather_station.mean_values_20_days['temperature'])
     print("huminidty", weather_station.mean_values_20_days['humidity'])
