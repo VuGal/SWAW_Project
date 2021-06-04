@@ -3,6 +3,7 @@ import pathlib
 import time
 import mysql.connector
 import re
+from regression_database import RegressionDatabase
 
 indexFilePath = pathlib.Path('/var/www/html/index.html')
 MAX_RECORDS = 960
@@ -49,8 +50,16 @@ def save_to_database():
     historyDatabase.close()
 if __name__ == "__main__":
     savedTimestamp = None
+
+    # Make object of class RegressionDatabase
+    prediction_update = RegressionDatabase()
+
     while(1):
         time.sleep(5)
         savedTimestamp, modified = check_if_modified(savedTimestamp)
         if(modified == True):
             save_to_database()
+
+            # Run prediction calculations
+            prediction_update.run_prediction_and_update()
+
