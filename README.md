@@ -1,7 +1,9 @@
 # SWAW_Project
 Weather station project for SWAW course.
 
-Android directory - contains the source code of the Android app which fetches the weather info from the server
+Android directory - contains the source code of the Android app which fetches the weather info from the server (along with prediction data)
+
+Azure directory - contains the scripts related to weather prediction and database operations
 
 Nucleo directory - contains the STM32 Nucleo source code (based on STM32CubeIDE) which is responsible for the communication with sensors and CAN communication with Raspberry Pi
 
