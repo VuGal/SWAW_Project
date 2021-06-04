@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">Weather Station</string>
-    <string name="temperature_text">Temperature:</string>
-    <string name="humidity_text">Humidity:</string>
-    <string name="pressure_text">Pressure:</string>
-    <string name="illuminance_text">Illuminance:</string>
-    <string name="check_button">Update</string>
+    <string name="temperature_text">Temperature: %s °C</string>
+    <string name="humidity_text">Humidity: %s %%</string>
+    <string name="pressure_text">Pressure: %s hPa</string>
+    <string name="illuminance_text">Illuminance: %s Lx</string>
+    <string name="precipitation_text">Precipitation: %s</string>
+    <string name="temperature_blank_text">Temperature:</string>
+    <string name="humidity_blank_text">Humidity:</string>
+    <string name="pressure_blank_text">Pressure:</string>
+    <string name="illuminance_blank_text">Illuminance:</string>
+    <string name="precipitation_blank_text">Precipitation:</string>
+    <string name="prediction_header_day_text">Prediction for the next day:</string>
+    <string name="prediction_header_night_text">Prediction for the next night:</string>
 </resources>
