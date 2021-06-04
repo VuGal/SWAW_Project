@@ -174,7 +174,7 @@ class RegressionDatabase:
             for key, value in self.mean_values_20_days.items():
                 self.mean_values_20_days[key].append(row['mean_' + key])
 
-    def cacl_predicted_data(self):
+    def calc_predicted_data(self):
 
         self.get_single_day()
         self.append_to_overall_table()
@@ -283,7 +283,7 @@ if __name__ == '__main__':
     weather_station = RegressionDatabase()
     weather_station.get_data_from_database()
 
-    weather_station.cacl_predicted_data()
+    weather_station.calc_predicted_data()
 
     print("temp", weather_station.mean_values_20_days['temperature'])
     print("huminidty", weather_station.mean_values_20_days['humidity'])
